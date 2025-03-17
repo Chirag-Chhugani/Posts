@@ -6,38 +6,65 @@ import axios from "axios"
 import Card from './component/Card'
 function App() {
   const [data, setData] = useState([])
-  const [titleSort,setTitlesort]=useState(null);
+  const [titleSort,setTitlesort]=useState("");
+  const [idSort,setIDSort]=useState("");
   useEffect(()=>{
    async function show(){
       const res=await axios.get("https://jsonplaceholder.typicode.com/posts")
       console.log(res.data);
       setData(res.data)
     }
-
     show();
   },[])
-  function handleTitleSorting(e){
-  setTitlesort(e.target.value)
-  
-  const sortedData=data.sort((a,b)=>{
-    if(titleSort==='a2d')
-      return a.title-b.title
-    else if(titleSort==='d2a')
-      return b.title-a.title
-  })
-  setData(sortedData)
+  function handleSorting(){
+   let sortedData=[...data]
+
+   if(titleSort){
+    sortedData.sort((a,b)=>
+      titleSort==='a2d'?a.title.localeCompare(b.title):
+      b.title.localeCompare(a.title))
+   }
+
+   if(idSort){
+    sortedData.sort((a,b)=>
+    idSort==='a2d'?a.userId-b.userId:
+    b.userId-a.userId
+    )
   }
+   setData(sortedData)
+  }
+  
+
 
   return (
     <>
      <h1>Cards</h1>
      <label>Sort by Title
-     <select onChange={handleTitleSorting}>
-      <option value={null}>Select</option>
+     <select value={titleSort} onChange={(e)=>setTitlesort(e.target.value)}>
+      <option value="">Select</option>
       <option value="a2d">Asc to Des</option>
       <option value="d2a">Des to Asc</option>
      </select>
      </label>
+     <label>Sort by UserID
+     <select value={idSort} onChange={(e)=>setIDSort(e.target.value)}>
+      <option value="">Select</option>
+      <option value="a2d">Asc to Des</option>
+      <option value="d2a">Des to Asc</option>
+     </select>
+     </label>
+
+     {/* <label>
+        Filter by UserID:
+        <input
+          type="number"
+          value={userIdFilter}
+          onChange={(e) => setUserIdFilter(e.target.value)}
+          placeholder="Enter User Id"
+        />
+      </label> */}
+
+     <button onClick={handleSorting}>Sort</button>
      {
       data.map((ele)=>(
         <div key={ele.id}>
